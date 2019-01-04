@@ -1,0 +1,45 @@
+---
+
+- hosts: all
+  become: yes
+  become_method: sudo
+
+  tasks:
+
+  - name: 1. Install Latest Version HTTP/Apache RPMs
+    yum: name=httpd state=present
+
+  - name: 2. Updating OS.....
+    command: yum update
+
+  - name: 3. Starting Firewalld service
+    command: systemctl start firewalld
+
+  - name: 4. Enable Firewalld service
+    command: systemctl enable firewalld
+
+  - name: 5. Allowing HTTPd in Firewall service
+    command: firewall-cmd --permanent --add-port=80/tcp
+
+  - name: 6. Reloading Firewalld service
+    command: firewall-cmd --reload
+
+  - name: 7. Start httpd service
+    service: name=httpd state=started enabled=yes
+
+#  - name: 8. Installing Mysql
+#    command: yum install mysql
+  
+#  - name: 9. Restarting Mysqld service.
+#    command: systemctl restart mysqld 
+
+#  - name: 10. Enable Mysql for OnBoot service.
+#    command: systemctl enable mysqld
+
+  handlers:
+
+  - name: restart httpd service
+    service: name=httpd state=restarted enabled=yes
+
+#  - name: restart Mysqld service
+#    service: name=mysqld state=restarted enabled=yes
